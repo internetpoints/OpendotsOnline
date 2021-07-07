@@ -18,7 +18,15 @@ function Dot(x, y) {
 }
 
 function Line(x1, y1, x2, y2) {
-  
+  this.x1 = x1;
+  this.x2 = x2;
+  this.y1 = y1;
+  this.y2 = y2;
+
+  this.display = function() {
+    stroke(color(255, 255, 255));
+    line(this.x1, this.y1, this.x2, this.y2);
+  }
 }
 
 const h = 500;
@@ -27,7 +35,8 @@ const rows = 15;
 const cols = 15;
 
 var dots = [];
-var lines = [];
+var horizaontalLines = [];
+var verticalLines = [];
 
 function setup() {
   createCanvas(w, h);
@@ -35,8 +44,24 @@ function setup() {
   var rowSpacing = h / rows;
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
-      if (j === 0) dots[i] = [];
+      if (j === 0) {
+        dots[i] = [];
+        horizaontalLines[i] = [];
+        verticalLines[i] = [];
+      }
       dots[i][j] = new Dot(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2);
+      if (i < rows - 1) {
+        horizaontalLines[i][j] = new Line(
+          i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2,
+          (i+1) * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2
+        );
+      }
+      if (j < cols - 1) {
+        verticalLines[i][j] = new Line(
+          i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2,
+          i * colSpacing + colSpacing / 2, (j+1) * rowSpacing + rowSpacing / 2
+        );
+      }
     }
   }
 }
@@ -54,6 +79,12 @@ function draw() {
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
       dots[i][j].display();
+      if (i < rows - 1) {
+        horizaontalLines[i][j].display();
+      }
+      if (j < cols - 1) {
+        verticalLines[i][j].display();
+      }
     }
   }
 }
