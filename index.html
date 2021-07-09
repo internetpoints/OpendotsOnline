@@ -1,13 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>repl.it</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
-  </head>
-  <body>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>Hello World</title>
+</head>
+  <script src="pixi/pixi.min.js"></script>
+<body>
+  <script type="text/javascript">
+    const h = 400;
+    const w = 400;
+    const rows = 15;
+    const cols = 15;
+    
+    const app = new PIXI.Application({antialias: true, width: w, height: h, backgroundColor: 0x000000});
+    document.body.appendChild(app.view);
+
+    var colSpacing = w / cols;
+    var rowSpacing = h / rows;
+
+    for (var i = 0; i < rows; i++) {
+      for (var j = 0; j < cols; j++) {
+        let graphics = new PIXI.Graphics();
+        graphics.interactive = true;
+        graphics.buttonMode = true;
+
+        graphics.lineStyle(0);
+        graphics.beginFill(0xFFFFFF, 1.0);
+        graphics.drawCircle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
+        graphics.endFill();
+
+        graphics.hitArea = new PIXI.Circle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
+
+        graphics.click = function (e) {
+          if (this.tint === 0xFFFFFF) {
+            this.tint = 0xFF0000;
+          } else {
+            this.tint = 0xFFFFFF;
+          }
+        }
+        
+        app.stage.addChild(graphics);
+      }
+    }
+  </script>
+</body>
 </html>
