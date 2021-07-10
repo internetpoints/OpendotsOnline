@@ -5,16 +5,15 @@
 	<meta charset="utf-8">
 	<title>Hello World</title>
 </head>
-<script src="pixi/pixi.min.js">
 
-</script>
+<script src="pixi/pixi.min.js"></script>
 
 <body>
 	<script type="text/javascript">
 		const h = 400;
     const w = 400;
-    const rows = 15;
-    const cols = 15;
+    const rows = 10;
+    const cols = 10;
     
     const app = new PIXI.Application({antialias: true, width: w, height: h, backgroundColor: 0x000000});
     document.body.appendChild(app.view);
@@ -24,9 +23,29 @@
     const lineHitAreaBuffer = 10;
 
     let dots = [];
+    let squares = [];
+    let horizontalLines = [];
+    let verticalLines = [];
 
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
+        if (j === 0) {
+          squares[i] = [];
+          horizontalLines[i] = [];
+          verticalLines[i] = [];
+        }
+
+        // Squares
+        if (i < rows - 1 && j < cols - 1) {
+          let square = new PIXI.Graphics();
+          square.lineStyle(0);
+          square.beginFill(0x0000FF, 1.0);
+          square.drawRect(i * colSpacing + colSpacing / 2, (j * rowSpacing + rowSpacing / 2) - 0.5, colSpacing, rowSpacing);
+          square.endFill();
+          squares[i][j] = square;
+          app.stage.addChild(square);
+        }
+
         // Horizontal Lines
         if (i < rows - 1) {
           let horizontalLine = new PIXI.Graphics();
@@ -41,11 +60,10 @@
           horizontalLine.click = function (e) {
             if (this.tint === 0xFFFFFF) {
               this.tint = 0xFF0000;
-            } else {
-              this.tint = 0xFFFFFF;
+              checkSquares();
             }
           }
-
+          horizontalLines[i][j] = horizontalLine;
           app.stage.addChild(horizontalLine);
         }
 
@@ -63,11 +81,10 @@
           verticalLine.click = function (e) {
             if (this.tint === 0xFFFFFF) {
               this.tint = 0xFF0000;
-            } else {
-              this.tint = 0xFFFFFF;
+              checkSquares();
             }
           }
-
+          verticalLines[i][j] = verticalLine;
           app.stage.addChild(verticalLine);
         }
 
@@ -96,6 +113,24 @@
       }
     }
 
+    function checkSquares() {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (i < rows - 1 && j < cols - 1) {
+            // Check if the top, right, bottom and left lines are drawn
+            if (
+              horizontalLines[i][j].tint === 0xFF0000 &&
+              horizontalLines[i][j+1].tint === 0xFF0000 &&
+              verticalLines[i][j].tint === 0xFF0000 &&
+              verticalLines[i+1][j].tint === 0xFF0000
+              ) {
+              squares[i][j].tint = 0x00FF00;
+            }
+          }
+        }
+      }
+    }
+
     let count = 1.0;
     app.ticker.add(() => {
       if (count > 0.0) {
@@ -104,8 +139,8 @@
         count = 1;
       }
       for (let i = 0; i < dots.length; i++) {
-        if (count === 1) dots[i].tint = 0xFFFFFF * Math.random();
-        dots[i].alpha = count;
+        //if (count === 1) dots[i].tint = 0xFFFFFF * Math.random();
+        //dots[i].alpha = count;
       }
     });
 	</script>
