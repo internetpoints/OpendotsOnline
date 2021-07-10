@@ -1,13 +1,17 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8">
-  <title>Hello World</title>
+	<meta charset="utf-8">
+	<title>Hello World</title>
 </head>
-  <script src="pixi/pixi.min.js"></script>
+<script src="pixi/pixi.min.js">
+
+</script>
+
 <body>
-  <script type="text/javascript">
-    const h = 400;
+	<script type="text/javascript">
+		const h = 400;
     const w = 400;
     const rows = 15;
     const cols = 15;
@@ -15,33 +19,96 @@
     const app = new PIXI.Application({antialias: true, width: w, height: h, backgroundColor: 0x000000});
     document.body.appendChild(app.view);
 
-    var colSpacing = w / cols;
-    var rowSpacing = h / rows;
+    const colSpacing = w / cols;
+    const rowSpacing = h / rows;
+    const lineHitAreaBuffer = 10;
 
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < cols; j++) {
-        let graphics = new PIXI.Graphics();
-        graphics.interactive = true;
-        graphics.buttonMode = true;
+    let dots = [];
 
-        graphics.lineStyle(0);
-        graphics.beginFill(0xFFFFFF, 1.0);
-        graphics.drawCircle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
-        graphics.endFill();
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        // Horizontal Lines
+        if (i < rows - 1) {
+          let horizontalLine = new PIXI.Graphics();
+          horizontalLine.interactive = true;
+          horizontalLine.buttonMode = true;
 
-        graphics.hitArea = new PIXI.Circle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
+          horizontalLine.lineStyle(1, 0xFFFFFF, 1);
+          horizontalLine.drawRect(i * colSpacing + colSpacing / 2, (j * rowSpacing + rowSpacing / 2) - 0.5, colSpacing, 1);
 
-        graphics.click = function (e) {
-          if (this.tint === 0xFFFFFF) {
-            this.tint = 0xFF0000;
-          } else {
-            this.tint = 0xFFFFFF;
+          horizontalLine.hitArea = new PIXI.Rectangle(i * colSpacing + colSpacing / 2, (j * rowSpacing + rowSpacing / 2) - lineHitAreaBuffer / 2, colSpacing, lineHitAreaBuffer);
+
+          horizontalLine.click = function (e) {
+            if (this.tint === 0xFFFFFF) {
+              this.tint = 0xFF0000;
+            } else {
+              this.tint = 0xFFFFFF;
+            }
           }
+
+          app.stage.addChild(horizontalLine);
         }
-        
-        app.stage.addChild(graphics);
+
+        // Vertical Lines
+        if (j < cols - 1) {
+          let verticalLine = new PIXI.Graphics();
+          verticalLine.interactive = true;
+          verticalLine.buttonMode = true;
+
+          verticalLine.lineStyle(1, 0xFFFFFF, 1);
+          verticalLine.drawRect(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 1, rowSpacing);
+
+          verticalLine.hitArea = new PIXI.Rectangle((i * colSpacing + colSpacing / 2) - lineHitAreaBuffer / 2, j * rowSpacing + rowSpacing / 2, lineHitAreaBuffer, rowSpacing);
+
+          verticalLine.click = function (e) {
+            if (this.tint === 0xFFFFFF) {
+              this.tint = 0xFF0000;
+            } else {
+              this.tint = 0xFFFFFF;
+            }
+          }
+
+          app.stage.addChild(verticalLine);
+        }
+
+        // Dots
+        let dot = new PIXI.Graphics();
+        //dot.interactive = true;
+        //dot.buttonMode = true;
+
+        dot.lineStyle(0);
+        dot.beginFill(0xFFFFFF, 1.0);
+        dot.drawCircle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
+        dot.endFill();
+
+        //dot.hitArea = new PIXI.Circle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
+
+        //dot.click = function (e) {
+        //  if (this.tint === 0xFFFFFF) {
+        //    this.tint = 0xFF0000;
+        //  } else {
+        //    this.tint = 0xFFFFFF;
+        //  }
+        //}
+
+        dots.push(dot);
+        app.stage.addChild(dot);
       }
     }
-  </script>
+
+    let count = 1.0;
+    app.ticker.add(() => {
+      if (count > 0.0) {
+        count -= 0.1;
+      } else {
+        count = 1;
+      }
+      for (let i = 0; i < dots.length; i++) {
+        if (count === 1) dots[i].tint = 0xFFFFFF * Math.random();
+        dots[i].alpha = count;
+      }
+    });
+	</script>
 </body>
+
 </html>
