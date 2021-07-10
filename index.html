@@ -18,6 +18,11 @@
     const app = new PIXI.Application({antialias: true, width: w, height: h, backgroundColor: 0x000000});
     document.body.appendChild(app.view);
 
+    let playerOne = 0xFF0000; // red line
+    let playerTwo = 0x00FF00; // green line
+
+    let player = playerOne;
+
     const colSpacing = w / cols;
     const rowSpacing = h / rows;
     const lineHitAreaBuffer = 10;
@@ -39,7 +44,7 @@
         if (i < rows - 1 && j < cols - 1) {
           let square = new PIXI.Graphics();
           square.lineStyle(0);
-          square.beginFill(0x0000FF, 1.0);
+          square.beginFill(0xFFFFFF, 1.0);
           square.drawRect(i * colSpacing + colSpacing / 2, (j * rowSpacing + rowSpacing / 2) - 0.5, colSpacing, rowSpacing);
           square.endFill();
           squares[i][j] = square;
@@ -59,8 +64,9 @@
 
           horizontalLine.click = function (e) {
             if (this.tint === 0xFFFFFF) {
-              this.tint = 0xFF0000;
+              this.tint = player;
               checkSquares();
+              nextTurn();
             }
           }
           horizontalLines[i][j] = horizontalLine;
@@ -80,8 +86,9 @@
 
           verticalLine.click = function (e) {
             if (this.tint === 0xFFFFFF) {
-              this.tint = 0xFF0000;
+              this.tint = player;
               checkSquares();
+              nextTurn();
             }
           }
           verticalLines[i][j] = verticalLine;
@@ -94,7 +101,7 @@
         //dot.buttonMode = true;
 
         dot.lineStyle(0);
-        dot.beginFill(0xFFFFFF, 1.0);
+        dot.beginFill(0x0000FF, 1.0);
         dot.drawCircle(i * colSpacing + colSpacing / 2, j * rowSpacing + rowSpacing / 2, 5);
         dot.endFill();
 
@@ -119,15 +126,25 @@
           if (i < rows - 1 && j < cols - 1) {
             // Check if the top, right, bottom and left lines are drawn
             if (
-              horizontalLines[i][j].tint === 0xFF0000 &&
-              horizontalLines[i][j+1].tint === 0xFF0000 &&
-              verticalLines[i][j].tint === 0xFF0000 &&
-              verticalLines[i+1][j].tint === 0xFF0000
+              horizontalLines[i][j].tint !== 0xFFFFFF &&
+              horizontalLines[i][j+1].tint !== 0xFFFFFF &&
+              verticalLines[i][j].tint !== 0xFFFFFF &&
+              verticalLines[i+1][j].tint !== 0xFFFFFF
               ) {
-              squares[i][j].tint = 0x00FF00;
+                if (squares[i][j].tint === 0xFFFFFF) {
+                  squares[i][j].tint = player;
+                }
             }
           }
         }
+      }
+    }
+
+    function nextTurn() {
+      if (player === playerOne) {
+        player = playerTwo;
+      } else {
+        player = playerOne;
       }
     }
 
