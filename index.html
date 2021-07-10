@@ -66,7 +66,6 @@
             if (this.tint === 0xFFFFFF) {
               this.tint = player;
               checkSquares();
-              nextTurn();
             }
           }
           horizontalLines[i][j] = horizontalLine;
@@ -88,7 +87,6 @@
             if (this.tint === 0xFFFFFF) {
               this.tint = player;
               checkSquares();
-              nextTurn();
             }
           }
           verticalLines[i][j] = verticalLine;
@@ -121,6 +119,7 @@
     }
 
     function checkSquares() {
+      let squareFilled = false;
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
           if (i < rows - 1 && j < cols - 1) {
@@ -133,10 +132,14 @@
               ) {
                 if (squares[i][j].tint === 0xFFFFFF) {
                   squares[i][j].tint = player;
+                  squareFilled = true;
                 }
             }
           }
         }
+      }
+      if (!squareFilled) {
+        nextTurn();
       }
     }
 
